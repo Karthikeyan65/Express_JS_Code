@@ -1,0 +1,26 @@
+{
+  "name": "express_js_code",
+  "version": "1.0.0",
+  "description": "Express JS sample codes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node api.mjs",
+    "dev": "nodemon api"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body": "^5.1.0",
+    "date-fns": "^4.1.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "fetch": "^1.1.0",
+    "module": "^1.2.5",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.1.7",
+    "parser": "^0.1.4",
+    "pg": "^8.13.1",
+    "uuid": "^11.0.3"
+  }
+}
