@@ -43,7 +43,7 @@ app.get('/fetch', (req,res)=>{
         }
     })
 })
-// F
+// Fetch by ID
 
 app.get('/fetchID/:id', (req,res)=>{
     const id = req.params.id
