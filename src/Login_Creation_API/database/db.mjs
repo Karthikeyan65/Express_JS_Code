@@ -1,8 +1,8 @@
 import pg from 'pg';
 
-const { Client } = pg;
+const { Pool } = pg;
 
-const client = new Client({
+const client = new Pool({
   user: "postgres",
   password: "tiger",
   host: "localhost",

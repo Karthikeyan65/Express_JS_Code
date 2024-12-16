@@ -7,11 +7,12 @@ export const userSchema = {
   properties: {
     uuid: { type: "string", minLength: 1, maxLength: 10000 },
     name: { type: "string", minLength: 1, maxLength: 50 },
+    email: { type: "string", minLength: 1, maxLength: 50 },
     password: { type: "string", minLength: 6, maxLength: 20 },
     age: { type: "string", minLength: 1, maxLength: 20 },
     address: { type: "string", minLength: 1, maxLength: 20 },
   },
-  required: [ "password"],
+  required: ["email", "password"],
   additionalProperties: false,
 };
 

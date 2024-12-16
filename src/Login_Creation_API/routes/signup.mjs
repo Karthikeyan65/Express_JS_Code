@@ -14,16 +14,15 @@ router.post('/', async (req, res) => {
     const valid = validateUser(req.body);
     if (!valid) return res.status(400).json({ message: "Validation failed", errors: validateUser.errors });
 
-    const {name, password, age, address } = req.body;
+    const {name, email, password, age, address } = req.body;
 
     const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.SECRET_KEY).toString();
 
     const userExists = await client.query("SELECT * FROM users WHERE uuid = $1", [uuid]);
     if (userExists.rows.length > 0) return res.status(400).json({ message: "User ID already exists" });
 
-    await client.query("INSERT INTO users(uuid, name, password, age, address) VALUES ($1, $2, $3, $4, $5)", [uuid, name, encryptedPassword, age, address]);
-    console.log("User ID:",uuid)
-    res.status(201).json({ message: "User created successfully", user: { uuid, name, age, address } });
+    await client.query("INSERT INTO users(uuid, name, email, password, age, address) VALUES ($1, $2, $3, $4, $5, $6)", [uuid, name, email,  encryptedPassword, age, address]);
+    res.status(201).json({ message: "User created successfully", user: { uuid, name, email, age, address } });
   } catch (error) {
     res.status(500).json({ message: `Signup Failed: ${error.message}` });
   }

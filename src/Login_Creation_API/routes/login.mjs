@@ -11,17 +11,17 @@ router.post('/', async (req, res) => {
     const valid = validateUser(req.body);
     if (!valid) return res.status(400).json({ message: "Validation failed", errors: validateUser.errors });
 
-    const { uuid, name, password } = req.body;
+    const { email, password } = req.body;
 
-    const result = await client.query("SELECT * FROM users WHERE uuid = $1 AND name = $2", [uuid, name]);
+    const result = await client.query("SELECT * FROM users WHERE email = $1", [email]);
     const user = result.rows[0];
 
-    if (!user) return res.status(400).json({ message: "Invalid ID or Name" });
+    if (!user) return res.status(400).json({ message: "Invalid emailID" });
 
     const decryptedPassword = CryptoJS.AES.decrypt(user.password, process.env.SECRET_KEY).toString(CryptoJS.enc.Utf8);
     if (password !== decryptedPassword) return res.status(400).json({ message: "Invalid Password" });
 
-    const token = jwt.sign({ userID: user.uuid, username:user.name }, process.env.SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ userID: user.uuid, username:user.name, email: user.email }, process.env.SECRET_KEY, { expiresIn: "1m" });
     res.json({ message: "Login successful", token });
   } catch (error) {
     res.status(500).json({ message: `Login Failed: ${error.message}` });
