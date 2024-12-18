@@ -20,13 +20,13 @@ router.post('/', async (req, res) => {
 
     const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.SECRET_KEY).toString();
 
-    const userExists = await client.query("SELECT * FROM users WHERE id = $1", [uuid]);
+    const userExists = await client.query("SELECT * FROM users WHERE u_id = $1", [uuid]);
     if (userExists.rows.length > 0) {
       return res.status(400).json({ message: "User ID already exists" });
     }
 
     await client.query(
-      "INSERT INTO users(id, name, email, password, age, address) VALUES ($1, $2, $3, $4, $5, $6)",
+      "INSERT INTO users(u_id, name, email, password, age, address) VALUES ($1, $2, $3, $4, $5, $6)",
       [uuid, name, email, encryptedPassword, age, address]
     );
 

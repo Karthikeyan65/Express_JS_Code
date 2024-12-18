@@ -5,9 +5,11 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    console.log(req.user.id)
-    const userResult = await client.query("SELECT * FROM users WHERE id = $1", [req.user.id]);
+    console.log("From API", req.user)
+    const userResult = await client.query("SELECT * FROM users WHERE id = $1", [req.user.userID]);
+    console.log("User Result",userResult.rows)
     const {password, ...user} = userResult.rows[0];
+    console.log("Output", user)
     res.json({ message: "Access granted", user });
     console.log()
   } catch (error) {

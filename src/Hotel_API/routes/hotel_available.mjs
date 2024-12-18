@@ -4,16 +4,30 @@ import client from '../database/db.mjs';
 const router = express.Router();
 
 router.get('/:hotel_id', async (req, res) => {
-  const { hotel_id } = req.params; 
+  const { hotel_id } = req.params;
 
   try {
     const query = `
-      SELECT h.id AS hotel_id, h.hotel_name, COUNT(r.id) AS total_rooms
+    SELECT 
+        h.id AS hotel_id, 
+        h.hotel_name, 
+        COUNT(r.id) AS total_rooms, 
+        array_agg(
+          CASE 
+            WHEN r.status = 'Available' THEN r.room_no
+            ELSE 0 
+          END
+        ) AS available_rooms,
+        array_agg(
+          CASE 
+            WHEN r.status = 'occupied' THEN r.room_no
+            ELSE 0 
+          END
+        ) AS occupied_rooms
       FROM hotel h
       LEFT JOIN rooms r ON h.id = r.hotel_id
       WHERE h.id = $1
-      GROUP BY h.id, h.hotel_name;
-    `;
+      GROUP BY h.id, h.hotel_name; `;
 
     const { rows } = await client.query(query, [hotel_id]);
 
@@ -23,10 +37,19 @@ router.get('/:hotel_id', async (req, res) => {
 
     const hotel = rows[0];
 
+    let availableRooms = hotel.available_rooms.filter(room => room !== 0);
+    let occupiedRooms = hotel.occupied_rooms.filter(room => room !== 0);
+    if(occupiedRooms.length === 0)
+      occupiedRooms = 0
+    if(availableRooms.length === 0)
+      availableRooms = 0
+
     res.status(200).json({
-      message: 'The Hotel are listed below.',
+      message: 'The Hotel details are listed below.',
       hotel_name: hotel.hotel_name,
       total_rooms: hotel.total_rooms,
+      available_rooms: availableRooms,
+      occupied_rooms: occupiedRooms,
     });
   } catch (err) {
     console.error('Error while fetching hotel details:', err.message);

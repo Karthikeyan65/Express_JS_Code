@@ -7,6 +7,7 @@ import changePasswordRoute from './routes/change.mjs';
 import userInfoRoute from './routes/userinfo.mjs';
 import hotelRoute from './routes/hotel_admin.mjs'
 import roomRoute from './routes/hotel_available.mjs'
+import bookingRoute from './routes/hotel_booking.mjs'
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use('/change', verifyToken, changePasswordRoute);
 app.use('/userinfo', verifyToken, userInfoRoute);
 app.use('/hotel', hotelRoute)
 app.use('/hotels/available', roomRoute)
+app.use('/booking', bookingRoute)
 
 app.listen(PORT, () => {
   console.log(`Server is running successfully at Port ${PORT}`);
