@@ -14,20 +14,20 @@ router.get('/:hotel_id', async (req, res) => {
         COUNT(r.id) AS total_rooms, 
         array_agg(
           CASE 
-            WHEN r.status = 'Available' THEN r.room_no
-            ELSE 0 
+            WHEN r.status = 'Available' THEN jsonb_build_object('room_id', r.id, 'room_no', r.room_no)
+            ELSE NULL 
           END
         ) AS available_rooms,
         array_agg(
           CASE 
-            WHEN r.status = 'occupied' THEN r.room_no
-            ELSE 0 
+            WHEN r.status = 'occupied' THEN jsonb_build_object('room_id', r.id, 'room_no', r.room_no)
+            ELSE NULL
           END
         ) AS occupied_rooms
       FROM hotel h
       LEFT JOIN rooms r ON h.id = r.hotel_id
       WHERE h.id = $1
-      GROUP BY h.id, h.hotel_name; `;
+      GROUP BY h.id, h.hotel_name;`;
 
     const { rows } = await client.query(query, [hotel_id]);
 
@@ -37,12 +37,11 @@ router.get('/:hotel_id', async (req, res) => {
 
     const hotel = rows[0];
 
-    let availableRooms = hotel.available_rooms.filter(room => room !== 0);
-    let occupiedRooms = hotel.occupied_rooms.filter(room => room !== 0);
-    if(occupiedRooms.length === 0)
-      occupiedRooms = 0
-    if(availableRooms.length === 0)
-      availableRooms = 0
+    let availableRooms = hotel.available_rooms.filter(room => room !== null);
+    let occupiedRooms = hotel.occupied_rooms.filter(room => room !== null);
+
+    if (occupiedRooms.length === 0) occupiedRooms = [];
+    if (availableRooms.length === 0) availableRooms = [];
 
     res.status(200).json({
       message: 'The Hotel details are listed below.',
